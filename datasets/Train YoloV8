@@ -1,0 +1,36 @@
+from ultralytics import YOLO
+import torch
+
+# Kiểm tra GPU
+if torch.cuda.is_available():
+    device = 0
+    print("Using GPU:", torch.cuda.get_device_name(0))
+else:
+    device = "cpu"
+    print("Using CPU")
+
+# Dùng model lớn hơn nano
+model = YOLO("yolov8s.pt")
+
+model.train(
+    data="data.yaml",
+    epochs=250,
+    imgsz=640,
+    batch=4,
+    device=device,
+    workers=0,
+
+    lr0=0.0005,
+    mosaic=1.0,
+    mixup=0.3,
+    degrees=15,
+    scale=0.5,
+    translate=0.2,
+    shear=2.0,
+    fliplr=0.5,
+
+    patience=50,
+    name="train_clean20"
+)
+
+print("Training finished.")
