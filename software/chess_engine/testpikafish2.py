@@ -134,7 +134,7 @@ def generate_fen_and_mapping(mapped_points, yolo_pieces):
 print(" Đang tải mô hình Mắt Thần (YOLO)...")
 model = YOLO(MODEL_PATH)
 
-print("🎥 Đang kết nối Camera...")
+print(" Đang kết nối Camera...")
 cap = cv2.VideoCapture(CAMERA_INDEX)
 if not cap.isOpened():
     print(f" KHÔNG MỞ ĐƯỢC CAMERA SỐ {CAMERA_INDEX}!")
