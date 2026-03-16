@@ -1,3 +1,10 @@
+"""
+CCR3 - Chinese Chess Robot
+Module: Software - Vision - pikafish engine
+Nhận diện bàn cờ và quân cờ bằng YOLO, chuyển đổi sang mã FEN, gọi Pikafish tính nước đi, rồi dịch ngược lại thành tọa độ XY cho robot thực thi.
+Input: Ảnh chụp bàn cờ từ camera
+Output: Nước đi tốt nhất của Pikafish và tọa độ XY để robot gắp quân
+"""
 import sys
 sys.stdout.reconfigure(encoding='utf-8') # Tránh lỗi hiển thị Emoji trên Windows
 
@@ -28,7 +35,7 @@ FEN_MAP = {
 # =============================================================
 # 2. KHỞI TẠO PIKAFISH ENGINE VÀ BẮT MẠCH THẮNG THUA
 # =============================================================
-print("⏳ Đang khởi động não bộ Pikafish...")
+print(" Đang khởi động não bộ Pikafish...")
 try:
     engine = subprocess.Popen(
         'pikafish.exe', 
@@ -37,9 +44,9 @@ try:
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    print("✅ Đã kết nối thành công với Pikafish!\n")
+    print(" Đã kết nối thành công với Pikafish!\n")
 except FileNotFoundError:
-    print("❌ LỖI: Không tìm thấy file pikafish.exe.")
+    print(" LỖI: Không tìm thấy file pikafish.exe.")
     os._exit(1)
 
 def get_best_move_from_pikafish(fen_string, think_time_ms):
@@ -59,16 +66,16 @@ def get_best_move_from_pikafish(fen_string, think_time_ms):
             if mate_idx + 1 < len(parts):
                 mate_val = parts[mate_idx + 1]
                 if mate_val == "1":
-                    game_over_msg = "🔴 CHIẾU TƯỚNG HẾT CỜ! NƯỚC ĐI NÀY SẼ KẾT LIỄU BẠN (MÁY THẮNG)!"
+                    game_over_msg = " CHIẾU TƯỚNG HẾT CỜ! NƯỚC ĐI NÀY SẼ KẾT LIỄU BẠN (MÁY THẮNG)!"
                 elif mate_val == "-1" or mate_val == "0":
-                    game_over_msg = "🟢 MÁY TÍNH ĐANG BỊ CHIẾU BÍ VÀ SẮP THUA!"
+                    game_over_msg = " MÁY TÍNH ĐANG BỊ CHIẾU BÍ VÀ SẮP THUA!"
 
         if line.startswith("bestmove"):
             best_move = parts[1] if len(parts) > 1 else ""
             
             # Nếu máy trả về none tức là nó không còn nước đi hợp lệ nào
             if best_move == "(none)" or best_move == "0000":
-                return None, "🏆 CHÚC MỪNG! BẠN ĐÃ CHIẾU BÍ VÀ GIÀNH CHIẾN THẮNG TRƯỚC AI!"
+                return None, " CHÚC MỪNG! BẠN ĐÃ CHIẾU BÍ VÀ GIÀNH CHIẾN THẮNG TRƯỚC AI!"
             
             return best_move, game_over_msg
 
@@ -124,13 +131,13 @@ def generate_fen_and_mapping(mapped_points, yolo_pieces):
 # =============================================================
 # 3. KHỞI TẠO MẮT THẦN (YOLO & CAMERA)
 # =============================================================
-print("⏳ Đang tải mô hình Mắt Thần (YOLO)...")
+print(" Đang tải mô hình Mắt Thần (YOLO)...")
 model = YOLO(MODEL_PATH)
 
 print("🎥 Đang kết nối Camera...")
 cap = cv2.VideoCapture(CAMERA_INDEX)
 if not cap.isOpened():
-    print(f"❌ KHÔNG MỞ ĐƯỢC CAMERA SỐ {CAMERA_INDEX}!")
+    print(f" KHÔNG MỞ ĐƯỢC CAMERA SỐ {CAMERA_INDEX}!")
     os._exit(1)
 
 # =============================================================
@@ -159,7 +166,7 @@ OFFSET_X = 115.0
 OFFSET_Y = 300.0
 
 print("\n" + "="*60)
-print(" 🤖 HỆ THỐNG ROBOT CỜ TƯỚNG TỰ ĐỘNG 🤖 ")
+print("  HỆ THỐNG ROBOT CỜ TƯỚNG TỰ ĐỘNG  ")
 print(" - Kéo các thanh 'Crop' để gọt bỏ phần nền thừa bên ngoài.")
 print(" - Nhấn phím SPACE để Máy chụp ảnh và phân tích nước đi.")
 print("="*60 + "\n")
@@ -197,8 +204,8 @@ while True:
     if key == ord('q'): break
     
     elif key == ord(' '):  
-        print("\n" + "⚡"*25)
-        print("📸 ĐÃ CHỤP ẢNH! ĐANG XỬ LÝ LỌC NHIỄU...")
+        print("\n" + ""*25)
+        print(" ĐÃ CHỤP ẢNH! ĐANG XỬ LÝ LỌC NHIỄU...")
         
         length_val = max(1, cv2.getTrackbarPos("Line Length", "Control Panel"))
         thresh_val = cv2.getTrackbarPos("Threshold", "Control Panel")
@@ -312,13 +319,13 @@ while True:
 
         # BƯỚC 3: XỬ LÝ FEN VÀ GỌI PIKAFISH
         if not mapped_points:
-            print("⚠️ Lỗi: Không bắt được lưới bàn cờ. Vui lòng kiểm tra ánh sáng!")
+            print(" Lỗi: Không bắt được lưới bàn cờ. Vui lòng kiểm tra ánh sáng!")
             continue
 
         current_fen, grid_to_piece = generate_fen_and_mapping(mapped_points, yolo_pieces)
-        print(f"📍 MÃ FEN HIỆN TẠI TỪ CAMERA:\n ---> {current_fen} <---")
+        print(f" MÃ FEN HIỆN TẠI TỪ CAMERA:\n ---> {current_fen} <---")
         
-        print("🤖 PIKAFISH ĐANG TÍNH TOÁN NƯỚC ĐI CHO ĐEN...")
+        print(" PIKAFISH ĐANG TÍNH TOÁN NƯỚC ĐI CHO ĐEN...")
         
         # --- LẤY KẾT QUẢ VÀ TRẠNG THÁI TỪ PIKAFISH ---
         best_move, game_over_msg = get_best_move_from_pikafish(current_fen, THINK_TIME_MS)
@@ -331,7 +338,7 @@ while True:
             end_label = ucci_to_grid_label(end_ucci)
             piece_name = grid_to_piece.get(start_label, "Một quân cờ")
             
-            print(f"🔥 PIKAFISH QUYẾT ĐỊNH: Quân {piece_name.upper()} di chuyển từ {start_label} đến {end_label}")
+            print(f" PIKAFISH QUYẾT ĐỊNH: Quân {piece_name.upper()} di chuyển từ {start_label} đến {end_label}")
             
             start_xy = end_xy = None
             for pt in mapped_points:
@@ -341,25 +348,25 @@ while True:
                     end_xy = (pt.get('rob_x'), pt.get('rob_y'))
             
             if start_xy and end_xy and start_xy[0] is not None:
-                print(f"\n⚙️ TỌA ĐỘ ĐỂ ROBOT THỰC THI GẮP QUÂN ĐEN:")
-                print(f"   👉 BỐC quân tại ({start_label}): X= {start_xy[0]} mm, Y= {start_xy[1]} mm")
-                print(f"   👉 ĐẶT quân tại ({end_label}): X= {end_xy[0]} mm, Y= {end_xy[1]} mm")
+                print(f"\n TỌA ĐỘ ĐỂ ROBOT THỰC THI GẮP QUÂN ĐEN:")
+                print(f"    BỐC quân tại ({start_label}): X= {start_xy[0]} mm, Y= {start_xy[1]} mm")
+                print(f"    ĐẶT quân tại ({end_label}): X= {end_xy[0]} mm, Y= {end_xy[1]} mm")
             else:
-                print("⚠️ CẢNH BÁO: Không lấy được tọa độ XY do khuất lưới (A1, A9, J1)!")
+                print(" CẢNH BÁO: Không lấy được tọa độ XY do khuất lưới (A1, A9, J1)!")
                 
             # IN THÔNG BÁO CHIẾU BÍ CỦA MÁY (NẾU CÓ)
             if game_over_msg:
-                print("\n" + "🏁"*20)
+                print("\n" + ""*20)
                 print(f" {game_over_msg}")
-                print("🏁"*20)
+                print(""*20)
                 
         else:
             # TRƯỜNG HỢP BẠN ĐÃ CHIẾU BÍ MÁY (MÁY TRẢ VỀ NONE)
-            print("\n" + "🏆"*20)
+            print("\n" + ""*20)
             print(f" {game_over_msg}")
-            print("🏆"*20)
+            print(""*20)
         
-        print("⚡"*25 + "\n")
+        print(""*25 + "\n")
 
 cap.release()
 cv2.destroyAllWindows()
