@@ -1,0 +1,12 @@
+# CCR3 - Chinese Chess Robot
+# Python dependencies
+
+# Computer Vision
+opencv-python
+numpy
+
+# AI / Object Detection
+ultralytics  # YOLOv8
+
+# Firmware toolchain
+platformio
