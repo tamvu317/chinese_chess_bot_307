@@ -1,19 +1,38 @@
 {
-  "fen": "2rbkabr1/9/3c2c2/2ppp1pp1/9/9/2P1P1PP1/3C2C2/9/2RNAANR1 b - - 0 1",
+  "command_id": "cmd_1774076007810",
+  "created_at": "2026-03-21T13:53:27",
+  "fen": "1n2kab2/4a1c2/4b4/p1C5p/4r4/2P3C2/PN2c1P1P/4B4/4A4/4KAB2 b - - 0 1",
   "robot_side": "b",
-  "move_uci": "c9a9",
-  "action": {
-    "pick": {
-      "label": "A3",
-      "piece": "xeden",
-      "x_mm": -53.0,
-      "y_mm": -301.1
+  "move_uci": "g8g3",
+  "mode": "mode_2_capture",
+  "steps": [
+    {
+      "step": "remove_captured_piece",
+      "from": {
+        "label": "G7",
+        "x_mm": -59.2,
+        "y_mm": -360.3,
+        "piece": "totdo"
+      },
+      "to": {
+        "label": "CAPTURE_BIN",
+        "x_mm": -180.0,
+        "y_mm": -320.0
+      }
     },
-    "place": {
-      "label": "A1",
-      "x_mm": -115.0,
-      "y_mm": -300.0
-    },
-    "capture": null
-  }
+    {
+      "step": "move_piece",
+      "from": {
+        "label": "B7",
+        "x_mm": -59.2,
+        "y_mm": -227.0,
+        "piece": "phaoden"
+      },
+      "to": {
+        "label": "G7",
+        "x_mm": -59.2,
+        "y_mm": -360.3
+      }
+    }
+  ]
 }
